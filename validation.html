@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Registration Form</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="data.html">Data</a>
+        </nav>
+    </header>
+
+    <main>
+        <p>Create your account. All fields are required.</p>
+
+        <form id="regForm" novalidate>
+            <div>
+                <label for="name">Name: </label>
+                <input type="text" id="name" name="name" placeholder="Enter your name:">
+                <span class="error" id="nameError"></span>
+            </div>
+
+            <div>
+                <label for="email">Email: </label>
+                <input type="email" id="email" name="email" placeholder="Enter you email:">
+                <span class="error" id="emailError"></span>
+            </div>
+
+            <div>
+                <label for="password">Password: </label>
+                <input type="password" id="password" name="password" placeholder="Enter your password:">
+                <span class="error" id="passwordError"></span>
+            </div>
+
+            <div>
+                <label for="confirm">Confirm Password: </label>
+                <input type="password" id="confirm" name="confirm" placeholder="Enter your password again:">
+                <span class="error" id="confirmError"></span>
+            </div>
+
+            <div>
+                <label for="age">Age: </label>
+                <input type="number" id="age" name="age" placeholder="Enter your age:">
+                <span class="error" id="ageError"></span>
+            </div>
+
+            <button type="submit">Register</button>
+            <p id="success"></p>
+        </form>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 My Blog</p>
+    </footer>
+
+    <script>
+        const form = document.getElementById("regForm");
+
+        const fields = {
+            name: document.getElementById("name"),
+            email: document.getElementById("email"),
+            password: document.getElementById("password"),
+            confirm: document.getElementById("confirm"),
+            age: document.getElementById("age")
+        };
+
+        const rules = {
+            name(value) {
+                if (value === "") return "Name is required.";
+                if (value.length < 3) return "Name must be at least 3 characters.";
+                return "";
+            },
+            email(value) {
+                if (value === "") return "Email is required.";
+                const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!pattern.test(value)) return "Enter a valid email like name@example.com.";
+                return "";
+            },
+            password(value) {
+                if (value === "") return "Password is required.";
+                if (value.length < 8) return "Password must be at least 8 characters.";
+                return "";
+            },
+            confirm(value) {
+                if (value === "") return "Please confirm your password.";
+                if (value !== fields.password.value) return "Passwords do not match.";
+                return "";
+            },
+            age(value) {
+                if (value === "") return "Age is required.";
+                const n = Number(value);
+                if (!Number.isInteger(n)) return "Age must be a whole number.";
+                if (n < 1 || n > 120) return "Age must be between 1 and 120.";
+                return "";
+            }
+        };
+
+        function showError(field, message) {
+            document.getElementById(field + "Error").textContent = message;
+            fields[field].classList.toggle("invalid", message !== "");
+        }
+
+        function validateField(field) {
+            const message = rules[field](fields[field].value.trim());
+            showError(field, message);
+            return message === "";
+        }
+
+        form.addEventListener("submit", function (event) {
+            let allValid = true;
+            for (const field in fields) {
+                if (!validateField(field)) allValid = false;
+            }
+
+            if (!allValid) {
+                event.preventDefault(); 
+                document.getElementById("success").textContent = "";
+                return;
+            }
+            event.preventDefault();
+            document.getElementById("success").textContent = "Registration successful!";
+            form.reset();
+        });
+
+
+        for (const field in fields) {
+            fields[field].addEventListener("input", function () {
+                validateField(field);
+               
+                if (field === "password" && fields.confirm.value !== "") {
+                    validateField("confirm");
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Table</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Data Table</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="validation.html">Register</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="controls">
+            <label for="search">Search: </label>
+            <input type="search" id="search" placeholder="Type a name, age or city">
+            <div>
+                <button type="button" id="sortName">Sort by name</button>
+                <button type="button" id="sortAge">Sort by age</button>
+            </div>
+        </div>
+
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>City</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 My Blog</p>
+    </footer>
+
+    <script>
+      
+        const people = [
+            { name: "Galal", age: 20, city: "Giza" },
+            { name: "Saja", age: 19, city: "Giza" },
+            { name: "Shams", age: 30, city: "Alexandria" },
+            { name: "Yehia", age: 22, city: "Mansoura" },
+            { name: "Laila", age: 27, city: "Cairo" },
+            { name: "Nour", age: 24, city: "Alexandria" },
+            { name: "Ahmed", age: 21, city: "Cairo" }
+        ];
+
+        const tableBody = document.getElementById("tableBody");
+        const searchBox = document.getElementById("search");
+
+        let sortBy = null;     
+        let ascending = true;
+
+        function renderTable(list) {
+            tableBody.innerHTML = "";
+
+            if (list.length === 0) {
+                const row = document.createElement("tr");
+                const cell = document.createElement("td");
+                cell.colSpan = 3;
+                cell.className = "empty";
+                cell.textContent = "No results found.";
+                row.appendChild(cell);
+                tableBody.appendChild(row);
+                return;
+            }
+
+            list.forEach(function (person) {
+                const row = document.createElement("tr");
+                [person.name, person.age, person.city].forEach(function (value) {
+                    const cell = document.createElement("td");
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+                tableBody.appendChild(row);
+            });
+        }
+
+        function update() {
+            const text = searchBox.value.trim().toLowerCase();
+
+            let result = people.filter(function (person) {
+                return person.name.toLowerCase().includes(text) ||
+                       String(person.age).includes(text) ||
+                       person.city.toLowerCase().includes(text);
+            });
+
+            if (sortBy === "name") {
+                result.sort((a, b) => a.name.localeCompare(b.name));
+            } else if (sortBy === "age") {
+                result.sort((a, b) => a.age - b.age);
+            }
+            if (!ascending) result.reverse();
+
+            renderTable(result);
+        }
+
+        searchBox.addEventListener("input", update);
+
+       
+        function setSort(key) {
+            if (sortBy === key) {
+                ascending = !ascending;
+            } else {
+                sortBy = key;
+                ascending = true;
+            }
+            update();
+        }
+
+        document.getElementById("sortName").addEventListener("click", function () {
+            setSort("name");
+        });
+        document.getElementById("sortAge").addEventListener("click", function () {
+            setSort("age");
+        });
+
+        update();
+    </script>
+</body>
+</html>
